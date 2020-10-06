@@ -58,7 +58,7 @@ export default () => {
                     onClick={(e) => {
                       setActiveMenuItem(
                         +activeMenuItem?.[0] === itemsIndex
-                          ? undefined
+                          ? activeMenuItem.slice(0, activeMenuItem.length - 2)
                           : String(itemsIndex)
                       );
                       e.target.scrollIntoView();
@@ -91,7 +91,10 @@ export default () => {
                           onClick={(e) => {
                             setActiveMenuItem(
                               +activeMenuItem?.[2] === itemIndex
-                                ? String(itemsIndex)
+                                ? activeMenuItem.slice(
+                                    0,
+                                    activeMenuItem.length - 2
+                                  )
                                 : `${itemsIndex}.${itemIndex}`
                             );
                             e.target.scrollIntoView();
@@ -148,7 +151,56 @@ export default () => {
     </>
   );
 };
-/* 
-const burgerItemLevel = () => {
-  return
-} */
+
+const BurgerItemLevel = (props) => {
+  const {
+    items,
+    mainItem,
+    activeMenuItem,
+    setActiveMenuItem,
+    level,
+    children,
+  } = props;
+
+  return items.map((item, itemIndex) => (
+    <li key={itemIndex} className="list-group-item">
+      <div className="d-flex justify-content-between">
+        <span>{mainItem}</span>
+        {item.length > 1 ? (
+          <span
+            onClick={(e) => {
+              setActiveMenuItem(
+                +activeMenuItem?.[level * 2] === itemIndex
+                  ? activeMenuItem.slice(0, activeMenuItem.length - 2)
+                  : `${
+                      activeMenuItem?.length === level * 2
+                        ? activeMenuItem.slice(0, activeMenuItem.length - 2)
+                        : activeMenuItem
+                    }.${itemIndex}`
+              );
+              e.target.scrollIntoView();
+            }}
+          >
+            {+activeMenuItem?.[level * 2] === itemIndex ? (
+              <i className="fa fa-angle-up" aria-hidden="true" />
+            ) : (
+              <i
+                className="fa fa-angle-down pl-3 border-left border-primary"
+                aria-hidden="true"
+              />
+            )}
+          </span>
+        ) : (
+          ""
+        )}
+      </div>
+      <ul
+        className={`list-group collapse ${
+          +activeMenuItem?.[level * 2] === itemIndex ? "show" : ""
+        }`}
+      >
+        {children}
+      </ul>
+    </li>
+  ));
+};
