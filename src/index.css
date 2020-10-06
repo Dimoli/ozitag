@@ -8,6 +8,22 @@ i {
   cursor: pointer;
 }
 
-/* @media (min-width: 992px) {
+li:hover {
+  background-color: blue;
 }
- */
+
+@media (min-width: 992px) {
+  .desktop-menu {
+    display: block !important;
+  }
+  .desktop-menu-content {
+    display: block !important;
+  }
+
+  .burger-menu {
+    display: none;
+  }
+  .burger-menu-content {
+    display: none !important;
+  }
+}
