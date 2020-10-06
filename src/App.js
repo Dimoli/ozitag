@@ -10,6 +10,7 @@ export default () => {
     setIsOpenBurger,
     isOpenBurger,
   ]);
+  console.log(activeMenuItem);
 
   return (
     <>
@@ -49,86 +50,29 @@ export default () => {
         } w-100 position-absolute bg-light border-top border-primary`}
       >
         <ul className="list-group">
-          {submenuItems.map((items, itemsIndex) => (
-            <li key={itemsIndex} className="list-group-item">
-              <div className="d-flex justify-content-between">
-                <span>{menuItems[itemsIndex]}</span>
-                {items.length > 1 ? (
-                  <span
-                    onClick={(e) => {
-                      setActiveMenuItem(
-                        +activeMenuItem?.[0] === itemsIndex
-                          ? activeMenuItem.slice(0, activeMenuItem.length - 2)
-                          : String(itemsIndex)
-                      );
-                      e.target.scrollIntoView();
-                    }}
-                  >
-                    {+activeMenuItem?.[0] === itemsIndex ? (
-                      <i className="fa fa-angle-up" aria-hidden="true" />
-                    ) : (
-                      <i
-                        className="fa fa-angle-down pl-3 border-left border-primary"
-                        aria-hidden="true"
-                      />
-                    )}
-                  </span>
-                ) : (
-                  ""
-                )}
-              </div>
-              <ul
-                className={`list-group collapse ${
-                  +activeMenuItem?.[0] === itemsIndex ? "show" : ""
-                }`}
+          <BurgerItemLevel
+            items={submenuItems}
+            activeMenuItem={activeMenuItem}
+            setActiveMenuItem={setActiveMenuItem}
+            level={0}
+          >
+            {(items) => (
+              <BurgerItemLevel
+                items={items}
+                activeMenuItem={activeMenuItem}
+                setActiveMenuItem={setActiveMenuItem}
+                level={1}
               >
-                {items.map((item, itemIndex) => (
-                  <li key={itemIndex} className="list-group-item">
-                    <div className="d-flex justify-content-between">
-                      <span>{item[0]}</span>
-                      {item.length > 1 ? (
-                        <span
-                          onClick={(e) => {
-                            setActiveMenuItem(
-                              +activeMenuItem?.[2] === itemIndex
-                                ? activeMenuItem.slice(
-                                    0,
-                                    activeMenuItem.length - 2
-                                  )
-                                : `${itemsIndex}.${itemIndex}`
-                            );
-                            e.target.scrollIntoView();
-                          }}
-                        >
-                          {+activeMenuItem?.[2] === itemIndex ? (
-                            <i className="fa fa-angle-up" aria-hidden="true" />
-                          ) : (
-                            <i
-                              className="fa fa-angle-down pl-3 border-left border-primary"
-                              aria-hidden="true"
-                            />
-                          )}
-                        </span>
-                      ) : (
-                        ""
-                      )}
-                    </div>
-                    <ul
-                      className={`list-group collapse ${
-                        +activeMenuItem?.[2] === itemIndex ? "show" : ""
-                      }`}
-                    >
-                      {item.slice(1).map((subitem, index) => (
-                        <li key={index} className="list-group-item">
-                          {subitem}
-                        </li>
-                      ))}
-                    </ul>
-                  </li>
-                ))}
-              </ul>
-            </li>
-          ))}
+                {(item) =>
+                  item.slice(1).map((subitem, index) => (
+                    <li key={index} className="list-group-item">
+                      {subitem}
+                    </li>
+                  ))
+                }
+              </BurgerItemLevel>
+            )}
+          </BurgerItemLevel>
         </ul>
       </div>
       {/*       <div
@@ -153,30 +97,25 @@ export default () => {
 };
 
 const BurgerItemLevel = (props) => {
-  const {
-    items,
-    mainItem,
-    activeMenuItem,
-    setActiveMenuItem,
-    level,
-    children,
-  } = props;
+  const { items, activeMenuItem, setActiveMenuItem, level, children } = props;
 
   return items.map((item, itemIndex) => (
     <li key={itemIndex} className="list-group-item">
       <div className="d-flex justify-content-between">
-        <span>{mainItem}</span>
+        <span>{level ? item[0] : menuItems[itemIndex]}</span>
         {item.length > 1 ? (
           <span
             onClick={(e) => {
               setActiveMenuItem(
                 +activeMenuItem?.[level * 2] === itemIndex
                   ? activeMenuItem.slice(0, activeMenuItem.length - 2)
-                  : `${
-                      activeMenuItem?.length === level * 2
+                  : level
+                  ? `${
+                      !Number.isNaN(+activeMenuItem?.[level * 2])
                         ? activeMenuItem.slice(0, activeMenuItem.length - 2)
                         : activeMenuItem
                     }.${itemIndex}`
+                  : String(itemIndex)
               );
               e.target.scrollIntoView();
             }}
@@ -199,7 +138,7 @@ const BurgerItemLevel = (props) => {
           +activeMenuItem?.[level * 2] === itemIndex ? "show" : ""
         }`}
       >
-        {children}
+        {children(item)}
       </ul>
     </li>
   ));
