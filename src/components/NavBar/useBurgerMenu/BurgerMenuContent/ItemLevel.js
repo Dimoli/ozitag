@@ -1,9 +1,15 @@
 import React, { useCallback } from "react";
 
-import { menuItems } from "../../../../assets/";
+import { menuItems, submenuItems } from "../../../../assets/";
 
-export default (props) => {
-  const { items, activeMenuItem, setActiveMenuItem, level, children } = props;
+export const InitialLevel = (props) => {
+  const {
+    items = submenuItems,
+    activeMenuItem,
+    setActiveMenuItem,
+    level = 0,
+    children,
+  } = props;
 
   const toggleMenu = useCallback(
     (itemIndex) =>
@@ -55,4 +61,35 @@ export default (props) => {
       </ul>
     </li>
   ));
+};
+
+export const Levels = (props) => {
+  const { items, activeMenuItem, setActiveMenuItem, levels = 1 } = props;
+
+  return (
+    <InitialLevel
+      items={items}
+      activeMenuItem={activeMenuItem}
+      setActiveMenuItem={setActiveMenuItem}
+      level={levels}
+    >
+      {(items) =>
+        items.slice(1).map((subitem, index) =>
+          Array.isArray(subitem) ? (
+            <Levels
+              key={index}
+              items={subitem}
+              activeMenuItem={activeMenuItem}
+              setActiveMenuItem={setActiveMenuItem}
+              levels={levels + 1}
+            />
+          ) : (
+            <li key={index} className="list-group-item">
+              {subitem}
+            </li>
+          )
+        )
+      }
+    </InitialLevel>
+  );
 };
